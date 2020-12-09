@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<script src="jquery.min.js"></script>
+	<script src="../src/jquery.event.tap.js"></script>
+	<script src="../src/jquery.event.taphold.js"></script>
+	<style>
+		#box{
+			width: 400px;
+			height: 400px;
+			background-color: #0fbfeb;
+			margin: 20px auto;
+		}
+	</style>
+</head>
+<body>
+	<div id="box">test box</div>
+
+	<script>
+		$('#box').on('tap taphold', evt=>{
+			console.log(evt.type, evt);
+		})
+	</script>
+	
+</body>
+</html>
