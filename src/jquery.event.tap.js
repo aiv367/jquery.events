@@ -1,57 +1,94 @@
 /**
- * jquery.touch.tap
- * tap
+ * jquery.events.tap
+ * jquery.events.taphold
  * @version 1.0.0
  * @update 2020/12/09
  * https://github.com/aiv367/jquery.events
  */
 
-//tap
-(function($){
+//tap taphold
+(function ($) {
 
 	$.tap = {
-		offset: 5
+		tapHoldTime: 400
 	};
-	
+
 	$.fn.tap = function (data, fn) {
-		return arguments.length > 0 ? $.on('tap', null, data, fn) : $.trigger('tap');
+		let $this = $(this);
+		return arguments.length > 0 ? $this.on('tap', null, data, fn) : $this.trigger('tap');
+	}
+
+	$.fn.taphold = function (data, fn) {
+		let $this = $(this);
+		return arguments.length > 0 ? $this.on('taphold', null, data, fn) : $this.trigger('taphold');
 	}
 
 	$.event.special['tap'] = {
-		delegateType: 'touchstart',
-		bindType: 'touchstart',
 
-		handle: function (event) {
+		setup: function () {
 
-			let $this = $(this);
-			let handleObj = event.handleObj;
+			let that = this;
+			let $this = $(that);
 
-			let startX = event.touches[0].pageX;
-			let startY = event.touches[0].pageY;
-			let isMove = false;
+			$this.on('touchstart', evt => {
 
-			let touchmove = evt => {
-				let x = evt.touches[0].pageX;
-				let y = evt.touches[0].pageY;
+				let startX = evt.touches[0].pageX;
+				let startY = evt.touches[0].pageY;
+				let isMove = false;
+				let isHoldTap = false;
+				let t;
 
-				if(Math.abs(x - startX) > $.tap.offset || Math.abs(y - startY) > $.tap.offset){
-					isMove = true;
+				clearTimeout(t);
+				t = setTimeout(() => {
+
+					//taphold
+					isHoldTap = true;
+					evt.type = 'taphold';
+					$.event.dispatch.call(that, evt);
+
+				}, $.tap.tapHoldTime);
+
+				function move(evt) {
+					if (Math.abs(evt.touches[0].pageX - startX) > 5 || Math.abs(evt.touches[0].pageY - startY) > 5) {
+						isMove = true;
+					}
 				}
 
-			};
+				function end(evt) {
 
-			let touchend = evt => {
-				$this.off('touchmove', touchmove);
-				if(!isMove){
-					event.type = handleObj.origType;;
-					handleObj.handler.apply( this, arguments );
+					if (!isMove && !isHoldTap) {
+
+						//tap
+						clearTimeout(t);
+						evt.type = 'tap';
+						$.event.dispatch.call(that, evt);
+
+					}
+
+					$this.off('touchmove', move);
+					$this.off('touchend', end);
 				}
-			};
 
-			$this.on('touchmove', touchmove);
-			$this.one('touchend', touchend);
+				$this.on('touchmove', move);
+				$this.on('touchend', end);
 
+			});
+
+		},
+
+		teardown: function () {
+			$(this).off('touchstart');
 		}
+
 	};
+
+	$.event.special['taphold'] = {
+		setup: function () {
+			$(this).on('tap', $.noop);
+		},
+		teardown: function () {
+			$(this).off('tap');
+		}
+	}
 
 })(window.jQuery);
