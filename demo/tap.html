@@ -30,14 +30,14 @@
 
 	<script>
 
-		$('#boxinside').on('taphold', evt=>{
+		$('#boxinside').on('tap holdtap', evt=>{
 			console.log('inside', evt.type, evt);
 			evt.preventDefault();
 			evt.stopPropagation();
 			return false;
 		})
 
-		$('#box').on('taphold', evt=>{
+		$('#box').on('tap', evt=>{
 			console.log('outside', evt.type, evt);
 		});
 
