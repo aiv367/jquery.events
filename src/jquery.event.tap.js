@@ -8,32 +8,28 @@
 
 //tap taphold
 (function ($) {
+	
 
-	$.tap = {
-		tapHoldTime: 400
-	};
-
-	$.fn.tap = function (data, fn) {
-		let $this = $(this);
-		return arguments.length > 0 ? $this.on('tap', null, data, fn) : $this.trigger('tap');
-	}
-
-	$.fn.taphold = function (data, fn) {
-		let $this = $(this);
-		return arguments.length > 0 ? $this.on('taphold', null, data, fn) : $this.trigger('taphold');
-	}
-
-	$.event.special['tap'] = {
+	$.event.special.tap = {
 
 		setup: function () {
 
 			let that = this;
 			let $this = $(that);
+			let hasTouch = 'ontouchend' in document;
+			let tapStart = false;
 
-			$this.on('touchstart', evt => {
+			$this.on('touchstart mousedown', evt => {
 
-				let startX = evt.touches[0].pageX;
-				let startY = evt.touches[0].pageY;
+
+				if(tapStart){
+					return;
+				}
+
+				tapStart = true;
+
+				let startX = evt.type === 'mousedown' ? evt.pageX : evt.touches[0].pageX;
+				let startY = evt.type === 'mousedown' ? evt.pageY : evt.touches[0].pageY;
 				let isMove = false;
 				let isHoldTap = false;
 				let t;
@@ -42,6 +38,9 @@
 				t = setTimeout(() => {
 
 					//taphold
+					if(isMove){
+						return false;
+					}
 					isHoldTap = true;
 					evt.type = 'taphold';
 					$.event.dispatch.call(that, evt);
@@ -49,7 +48,10 @@
 				}, $.tap.tapHoldTime);
 
 				function move(evt) {
-					if (Math.abs(evt.touches[0].pageX - startX) > 5 || Math.abs(evt.touches[0].pageY - startY) > 5) {
+					let moveX = evt.type === 'mousemove' ? evt.pageX : evt.touches[0].pageX;
+					let moveY = evt.type === 'mousemove' ? evt.pageY : evt.touches[0].pageY;
+
+					if (Math.abs(moveX - startX) > 5 || Math.abs(moveY - startY) > 5) {
 						isMove = true;
 					}
 				}
@@ -65,30 +67,49 @@
 
 					}
 
-					$this.off('touchmove', move);
-					$this.off('touchend', end);
+					$this.off('touchmove mousemove', move);
+					$this.off('touchend mouseup', end);
+
+					setTimeout(() => {
+						tapStart = false; 
+					});
+
 				}
 
-				$this.on('touchmove', move);
-				$this.on('touchend', end);
+				$this.on('touchmove mousemove', move);
+				$this.on('touchend mouseup', end);
 
 			});
 
 		},
 
 		teardown: function () {
-			$(this).off('touchstart');
+			$(this).off('touchstart mousedown');
 		}
 
 	};
 
-	$.event.special['taphold'] = {
+	$.event.special.taphold = {
 		setup: function () {
 			$(this).on('tap', $.noop);
 		},
 		teardown: function () {
 			$(this).off('tap');
 		}
+	};
+
+	$.tap = {
+		tapHoldTime: 400
+	};
+
+	$.fn.tap = function (data, fn) {
+		let $this = $(this);
+		return arguments.length > 0 ? $this.on('tap', null, data, fn) : $this.trigger('tap');
+	}
+
+	$.fn.taphold = function (data, fn) {
+		let $this = $(this);
+		return arguments.length > 0 ? $this.on('taphold', null, data, fn) : $this.trigger('taphold');
 	}
 
 })(window.jQuery);

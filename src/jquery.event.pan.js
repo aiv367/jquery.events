@@ -1,9 +1,9 @@
 /**
- * jquery.event.operate
- * jQuery event 全局事件扩展 (panstart, panmove, panend)
- * @version 1.0.0
- * @update 2019/05/23
- * https://github.com/aiv367/jquery.event.operate
+ * jquery.event.pan 
+ * 鼠标，手指，平移事件 panstart panmove panend
+ * @version 1.0.1
+ * @update 2020/12/31
+ * https://github.com/aiv367/jquery.events
  */
 (function($){
 

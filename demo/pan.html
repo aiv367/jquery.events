@@ -18,14 +18,19 @@
 </head>
 
 <body>
-	<div id="box"></div>
+	
+	<h1>jquery.event.pan</h1>
+	<div id="box">
+		<div>鼠标，手指，在此区间拖动触发pan事件</div>
+		<div>F12 查看浏览器控制台输出</div>
+	</div>
 
 	<script>
 
 		$('#box')
-			.on('panstart', (evt,data) => console.log(evt, data))
-			.on('panmove', (evt,data) => console.log(evt, data))
-			.on('panend', (evt,data) => console.log(evt, data));
+			.on('panstart', evt => console.log(evt))
+			.on('panmove', evt => console.log(evt))
+			.on('panend', evt => console.log(evt));
 
 	</script>
 
