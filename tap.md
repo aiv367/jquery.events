@@ -1,6 +1,8 @@
 # jquery.event.tap
 tap、taphold两个事件。支持鼠标，手指触摸，触摸笔响应
 
+[Demo](https://aiv367.github.io/jquery.events/demo/tap.html)
+
 ## 引入
 
 ```html
